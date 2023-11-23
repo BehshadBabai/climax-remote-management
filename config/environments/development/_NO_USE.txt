@@ -1,0 +1,3 @@
+just a place holder to save default value, change the destination files directly:
+/version.txt
+/config/environments/buildEnv.json

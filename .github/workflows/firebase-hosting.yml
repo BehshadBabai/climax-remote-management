@@ -1,0 +1,62 @@
+name: Firebase CI
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js version ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Make envfile
+        run: |
+          touch .env
+          echo FIRE_BASE_API=${{ secrets.FIRE_BASE_API }} >> .env
+          echo FIRE_BASE_AUTH_DOMAIN=${{ secrets.FIRE_BASE_AUTH_DOMAIN }} >> .env
+          echo FIRE_BASE_PROJECT_ID=${{ secrets.FIRE_BASE_PROJECT_ID }} >> .env
+          echo FIRE_BASE_STORAGE_BUCKET=${{ secrets.FIRE_BASE_STORAGE_BUCKET }} >> .env
+          echo FIRE_BASE_MESSAGING_SENDER_ID=${{ secrets.FIRE_BASE_MESSAGING_SENDER_ID }} >> .env
+          echo FIRE_BASE_APP_ID=${{ secrets.FIRE_BASE_APP_ID }} >> .env
+          echo FIRE_BASE_MEASUREMENT_ID=${{ secrets.FIRE_BASE_MEASUREMENT_ID }} >> .env
+
+      - run: npm i
+      - run: npm install -g firebase-tools
+      - run: npm run build
+
+      - name: Archive Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.4.0
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
