@@ -12,6 +12,42 @@ import {
 } from 'firebase/firestore';
 import { firestore } from '../Firebase/firebase';
 
+export const getCrumbItemsFromPath = (
+  path: string,
+  homeItem: {
+    title: React.JSX.Element;
+  }
+) => {
+  const init = [homeItem];
+  if (path === '/') {
+    return init;
+  } else if (path === '/reports' || path === '/reports/') {
+    return [...init, { title: 'Reports', href: '/reports' }];
+  } else if (path === '/reports/create' || path === '/reports/create/') {
+    return [
+      ...init,
+      { title: 'Reports', href: '/reports' },
+      { title: 'Create Report', href: '/reports/create' }
+    ];
+  } else if (
+    (path.match(/\/reports\/(.*)/) || path.match(/\/reports\/(.*)\//)) &&
+    !path.match(/\/reports\/(.*)\/(.+)/)
+  ) {
+    const splitArray = path.split('/');
+    const reportId =
+      path[path.length - 1] === '/'
+        ? splitArray[splitArray.length - 2]
+        : splitArray.pop();
+    return [
+      ...init,
+      { title: 'Reports', href: '/reports' },
+      { title: reportId, href: `/reports/${reportId}` }
+    ];
+  } else {
+    return [...init, { title: 'Page Not Found' }];
+  }
+};
+
 export const capitalizeFirstLetter = (raw: string) => {
   const firstLetter = raw[0].toUpperCase();
   const rest = raw.substring(1);
@@ -46,7 +82,6 @@ const addFieldsFromReference = (
   ref: object,
   result: object
 ) => {
-  console.log(ref);
   fields.forEach((field) => {
     if (ref[field]) {
       result[field] = ref[field];

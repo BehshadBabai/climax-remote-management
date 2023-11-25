@@ -16,7 +16,7 @@ const NoPage: React.FC = () => {
             navigate('/');
           }}
         >
-          Go To Account
+          Go To Home Page
         </Button>
       }
     />

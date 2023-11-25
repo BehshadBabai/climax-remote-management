@@ -3,5 +3,11 @@ export const Constants = {
 };
 
 export const colors = {
-  bg: 'white'
+  bg: 'white',
+  orange: '#f78713',
+  gray: '#757373'
+};
+
+export const firebaseErrorCodes = {
+  invalidLogin: 'auth/invalid-login-credentials'
 };

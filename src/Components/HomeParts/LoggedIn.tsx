@@ -1,0 +1,69 @@
+import { Result, Image, Button, message } from 'antd';
+import React from 'react';
+import useScreenSize from '../../Hooks/useScreenSize';
+import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../Firebase/firebase';
+import { changeLoggedIn } from '../../Redux/features/account/account-slice';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../Redux/hooks';
+
+const LoggedIn: React.FC = () => {
+  const [api, contextHolder] = message.useMessage();
+  const screenSize = useScreenSize();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const account = useAppSelector((state) => state.account);
+  const { info, type } = account;
+
+  return (
+    <>
+      {contextHolder}
+      <Result
+        icon={
+          <Image
+            src='assets/home.png'
+            preview={false}
+            width={screenSize.width > 450 ? 300 : 200}
+            height={screenSize.width > 450 ? 300 : 200}
+          />
+        }
+        title={`You are logged in as ${info.name}`}
+        subTitle={
+          <>
+            <p>Account Type: {type}</p>
+            <p>Email: {info.email}</p>
+          </>
+        }
+        extra={[
+          <Button
+            type='primary'
+            key='reports'
+            onClick={() => {
+              navigate('/reports');
+            }}
+          >
+            Reports
+          </Button>,
+          <Button
+            key='logout'
+            onClick={async () => {
+              try {
+                await signOut(auth).then(() => {
+                  message.success('Log Out Successful');
+                  dispatch(changeLoggedIn(false));
+                });
+              } catch (error) {
+                api.error('Log Out Failed');
+              }
+            }}
+          >
+            Logout
+          </Button>
+        ]}
+      />
+    </>
+  );
+};
+
+export default LoggedIn;
