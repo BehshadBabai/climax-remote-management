@@ -5,14 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../Firebase/firebase';
 import { changeLoggedIn } from '../../Redux/features/account/account-slice';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../Redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 
 const LoggedIn: React.FC = () => {
   const [api, contextHolder] = message.useMessage();
   const screenSize = useScreenSize();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const account = useAppSelector((state) => state.account);
   const { info, type } = account;
 

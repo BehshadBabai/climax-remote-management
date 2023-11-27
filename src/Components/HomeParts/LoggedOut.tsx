@@ -11,17 +11,17 @@ import {
 } from 'antd';
 import { auth } from '../../Firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AccountType } from '../../Redux/features/account/account-slice';
 import { firebaseErrorCodes } from '../../Utilities/Constants';
 import useScreenSize from '../../Hooks/useScreenSize';
+import { useAppDispatch } from '../../Redux/hooks';
 
 const LoggedOut: React.FC = () => {
   const [loginType, setLoginType] = React.useState<AccountType>(null);
   const [loginLoading, setLoginLoading] = React.useState(false);
   const screenSize = useScreenSize();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   return (

@@ -5,3 +5,21 @@
 .profile {
   cursor: pointer;
 }
+
+.customCard {
+  border-radius: 5px;
+  box-shadow: 1px 2px 4px 8px rgba(169, 169, 169, 0.381);
+}
+
+.customCard:hover {
+  transform: scale(1.05);
+}
+
+.reportTitle {
+  color: black;
+  cursor: pointer;
+}
+
+.reportTitle:hover {
+  color: #f78713;
+}

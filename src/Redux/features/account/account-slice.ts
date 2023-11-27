@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type AccountType = 'manager' | 'supervisor';
-export type ReportsViewType = 'list' | 'card';
+export type ReportsViewType = 'list' | 'grid';
 export type AccountInfo = {
   name: string;
   email: string;
@@ -12,13 +12,17 @@ export type AccountState = {
   loggedIn: boolean;
   info: AccountInfo;
   view: ReportsViewType;
+  id: string;
+  connectionId: string;
 };
 
 const initialState: AccountState = {
   loggedIn: false,
   type: 'manager',
   info: { name: '', email: '' },
-  view: 'card'
+  view: 'grid',
+  id: '',
+  connectionId: ''
 };
 
 const accountSlice = createSlice({
@@ -36,10 +40,22 @@ const accountSlice = createSlice({
     },
     changeInfo(state, action: PayloadAction<AccountInfo>) {
       state.info = action.payload;
+    },
+    changeUserId(state, action: PayloadAction<string>) {
+      state.id = action.payload;
+    },
+    changeConnectionId(state, action: PayloadAction<string>) {
+      state.connectionId = action.payload;
     }
   }
 });
 
-export const { changeLoggedIn, changeType, changeReportsViewType, changeInfo } =
-  accountSlice.actions;
+export const {
+  changeLoggedIn,
+  changeType,
+  changeReportsViewType,
+  changeInfo,
+  changeUserId,
+  changeConnectionId
+} = accountSlice.actions;
 export default accountSlice.reducer;

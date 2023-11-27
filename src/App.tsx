@@ -11,42 +11,76 @@ import Report from './Pages/Report';
 import { auth } from './Firebase/firebase';
 import {
   AccountType,
+  ReportsViewType,
+  changeConnectionId,
   changeInfo,
   changeLoggedIn,
-  changeType
+  changeReportsViewType,
+  changeType,
+  changeUserId
 } from './Redux/features/account/account-slice';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import { fetchAllDocuments } from './Utilities/Util';
+import {
+  fetchAllDocuments,
+  getAllReports,
+  getFileUrls
+} from './Utilities/Util';
+import { useAppDispatch } from './Redux/hooks';
+import { changeReports } from './Redux/features/report/report-slice';
 
 const { Content } = Layout;
 
 const App = () => {
   const [pending, setPending] = React.useState(true);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
+        dispatch(changeLoggedIn(true));
+        dispatch(changeUserId(user.uid));
         const docs = await fetchAllDocuments('users');
         docs.forEach((doc) => {
           const id = doc.id;
           const data = doc.data();
           const name = data.name as string;
           const email = data.email as string;
+          const connectionId = data.connectionId as string;
           const type = data.type as AccountType;
+          const view = data.view as ReportsViewType;
           if (id === user.uid) {
             dispatch(changeInfo({ name, email }));
             dispatch(changeType(type));
+            dispatch(changeReportsViewType(view));
+            dispatch(changeConnectionId(connectionId));
           }
         });
-        dispatch(changeLoggedIn(true));
         setPending(false);
       } else {
         dispatch(changeLoggedIn(false));
         setPending(false);
       }
     });
+  }, []);
+
+  React.useEffect(() => {
+    async function effect() {
+      const dbReports = await getAllReports();
+      const fullReports = await Promise.all(
+        dbReports.map(async (report) => {
+          const id = report.id;
+          const imageUrls = await getFileUrls(id, 'images');
+          const videoUrl = (await getFileUrls(id, 'video'))[0];
+          return {
+            ...report,
+            imageUrls,
+            videoUrl
+          };
+        })
+      );
+      dispatch(changeReports(fullReports));
+    }
+    effect();
   }, []);
 
   return (

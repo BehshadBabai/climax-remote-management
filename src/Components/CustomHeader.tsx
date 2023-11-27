@@ -12,8 +12,7 @@ import {
 import useScreenSize from '../Hooks/useScreenSize';
 import { Constants, colors } from '../Utilities/Constants';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { useAppSelector } from '../Redux/hooks';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../Redux/hooks';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { signOut } from 'firebase/auth';
 import { auth } from '../Firebase/firebase';
@@ -26,7 +25,7 @@ const CustomHeader: React.FC = () => {
   const screenSize = useScreenSize();
   const loggedIn = useAppSelector((state) => state.account.loggedIn);
   const [api, contextHolder] = message.useMessage();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const menuItem: ItemType = {

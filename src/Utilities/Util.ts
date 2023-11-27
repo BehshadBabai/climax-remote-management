@@ -11,6 +11,10 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { firestore } from '../Firebase/firebase';
+import { AccountState } from '../Redux/features/account/account-slice';
+import { getDownloadURL, getStorage, listAll, ref } from 'firebase/storage';
+import dayjs from 'dayjs';
+import { days, monthsShort } from './Constants';
 
 export const getCrumbItemsFromPath = (
   path: string,
@@ -154,4 +158,42 @@ export const fetchSingleDocument = (table: string, id: string) => {
 export const deleteDocument = async (table: string, id: string) => {
   const ref = doc(firestore, table, id);
   await deleteDoc(ref);
+};
+
+export const reduxToDbAccount = (redux: AccountState) => {
+  return {
+    email: redux.info.email,
+    name: redux.info.name,
+    type: redux.type,
+    view: redux.view
+  };
+};
+
+export const getAllReports = async () => {
+  const docs = await fetchAllDocuments('reports');
+  const result = [];
+  docs.forEach((doc) => {
+    const data = doc.data();
+    const id = doc.id;
+    result.push({ ...data, id });
+  });
+  return result;
+};
+
+export const getFileUrls = async (id: string, folder: string) => {
+  const storage = getStorage();
+  const imagesRef = ref(storage, `${id}/${folder}`);
+  const list = await listAll(imagesRef);
+  return await Promise.all(
+    list.items.map(async (item) => {
+      return Promise.resolve(getDownloadURL(item));
+    })
+  );
+};
+
+export const getFullDate = (date: string) => {
+  const dayjsDate = dayjs(date, 'YYYY-MM-DD');
+  return `${days[dayjsDate.day()]}, ${
+    monthsShort[dayjsDate.month()]
+  } ${dayjsDate.date()}, ${dayjsDate.year()}`;
 };
