@@ -86,6 +86,7 @@ const CustomHeader: React.FC = () => {
                       <Dropdown menu={{ items }}>
                         <Avatar
                           icon={<UserOutlined />}
+                          style={{ background: 'gray' }}
                           size={'large'}
                           className='profile'
                         />

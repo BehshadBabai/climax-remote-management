@@ -18,7 +18,7 @@ export type ReportState = {
 };
 
 const initialState: ReportState = {
-  reports: []
+  reports: null
 };
 
 const reportSlice = createSlice({

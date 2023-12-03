@@ -1,13 +1,26 @@
 import { FileTextOutlined } from '@ant-design/icons';
 import React from 'react';
-import { Avatar, List, Image, Typography, Space, Button } from 'antd';
+import {
+  Avatar,
+  List,
+  Image,
+  Typography,
+  Space,
+  Button,
+  Row,
+  Col,
+  Popconfirm
+} from 'antd';
 import { ViewProps } from '../../Utilities/types';
 import { colors } from '../../Utilities/Constants';
-import { getFullDate } from '../../Utilities/Util';
+import { deleteDocument, getFullDate } from '../../Utilities/Util';
 import useScreenSize from '../../Hooks/useScreenSize';
+import { changeReports } from '../../Redux/features/report/report-slice';
+import { useAppDispatch } from '../../Redux/hooks';
 
 const ListView: React.FC<ViewProps> = ({ reports }) => {
   const screenSize = useScreenSize();
+  const dispatch = useAppDispatch();
   return (
     <List
       style={{ marginTop: '20px' }}
@@ -23,9 +36,25 @@ const ListView: React.FC<ViewProps> = ({ reports }) => {
         <List.Item
           key={item.title}
           actions={[
-            <Typography.Link href={`/reports/${item.id}`}>
-              View Full Report
-            </Typography.Link>
+            <Space direction='vertical' size={'middle'}>
+              <Typography.Link href={`/reports/${item.id}`}>
+                View Full Report
+              </Typography.Link>
+              <Popconfirm
+                onConfirm={async () => {
+                  await deleteDocument('reports', item.id);
+                  dispatch(
+                    changeReports(reports.filter((rep) => rep.id !== item.id))
+                  );
+                }}
+                title={'Delete Report'}
+                description='Are you sure you want to delete this report?'
+              >
+                <Typography.Link style={{ color: 'red', display: 'flex' }}>
+                  Delete Report
+                </Typography.Link>
+              </Popconfirm>
+            </Space>
           ]}
           extra={
             screenSize.width > 700 ? (

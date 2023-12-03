@@ -6,7 +6,6 @@ const CreateReport: React.FC = () => {
   const loggedIn = useAppSelector((state) => state.account.loggedIn);
   const navigate = useNavigate();
   React.useEffect(() => {
-    console.log(loggedIn);
     if (!loggedIn) {
       navigate('/');
     }

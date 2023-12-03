@@ -14,6 +14,7 @@ import {
 import { addOrEditDoc, reduxToDbAccount } from '../Utilities/Util';
 import GridView from '../Components/ReportParts/GridView';
 import ListView from '../Components/ReportParts/ListView';
+import Loading from '../Components/Loading';
 
 const Reports: React.FC = () => {
   const account = useAppSelector((state) => state.account);
@@ -22,7 +23,8 @@ const Reports: React.FC = () => {
   const { loggedIn, view } = account;
   const navigate = useNavigate();
   const [selectLoading, setSelectLoading] = React.useState(false);
-  const initialReports = reports.filter((report) => {
+  const [pageLoading, setPageLoading] = React.useState(true);
+  const initialReports = reports?.filter((report) => {
     if (
       report.creatorId === account.id ||
       report.creatorId === account.connectionId
@@ -41,9 +43,14 @@ const Reports: React.FC = () => {
 
   React.useEffect(() => {
     setReportsToShow(initialReports);
+    if (reports) {
+      setPageLoading(false);
+    }
   }, [reports]);
 
-  return (
+  return pageLoading ? (
+    <Loading />
+  ) : (
     <Row style={{ marginTop: '25px' }}>
       <Col span={24}>
         <Row justify={'space-between'} gutter={[0, 25]}>

@@ -1,13 +1,25 @@
 import React from 'react';
 import { ViewProps } from '../../Utilities/types';
-import { Row, Col, Card, Image, Avatar, Typography, Empty } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Image,
+  Avatar,
+  Typography,
+  Empty,
+  Popconfirm
+} from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import { colors } from '../../Utilities/Constants';
 import { useNavigate } from 'react-router-dom';
-import { getFullDate } from '../../Utilities/Util';
+import { deleteDocument, getFullDate } from '../../Utilities/Util';
+import { useAppDispatch } from '../../Redux/hooks';
+import { changeReports } from '../../Redux/features/report/report-slice';
 
 const GridView: React.FC<ViewProps> = ({ reports }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   return (
     <Row gutter={[16, 32]} style={{ marginTop: '20px' }}>
       {reports.length < 1 && (
@@ -58,9 +70,31 @@ const GridView: React.FC<ViewProps> = ({ reports }) => {
               <p>Supervisor: {report.creatorName}</p>
               <p>Date: {getFullDate(report.date)}</p>
               <p>Time: {report.time}</p>
-              <Typography.Link href={`/reports/${report.id}`}>
-                View Full Report
-              </Typography.Link>
+              <Row justify={'space-between'}>
+                <Col>
+                  <Typography.Link href={`/reports/${report.id}`}>
+                    View Full Report
+                  </Typography.Link>
+                </Col>
+                <Col>
+                  <Popconfirm
+                    onConfirm={async () => {
+                      await deleteDocument('reports', report.id);
+                      dispatch(
+                        changeReports(
+                          reports.filter((rep) => rep.id !== report.id)
+                        )
+                      );
+                    }}
+                    title={'Delete Report'}
+                    description='Are you sure you want to delete this report?'
+                  >
+                    <Typography.Link style={{ color: 'red' }}>
+                      Delete Report
+                    </Typography.Link>
+                  </Popconfirm>
+                </Col>
+              </Row>
             </Card>
           </Col>
         );

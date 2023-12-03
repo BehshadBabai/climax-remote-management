@@ -19,7 +19,6 @@ import {
   changeType,
   changeUserId
 } from './Redux/features/account/account-slice';
-import { LoadingOutlined } from '@ant-design/icons';
 import {
   fetchAllDocuments,
   getAllReports,
@@ -27,6 +26,7 @@ import {
 } from './Utilities/Util';
 import { useAppDispatch } from './Redux/hooks';
 import { changeReports } from './Redux/features/report/report-slice';
+import Loading from './Components/Loading';
 
 const { Content } = Layout;
 
@@ -70,9 +70,10 @@ const App = () => {
         dbReports.map(async (report) => {
           const id = report.id;
           const imageUrls = await getFileUrls(id, 'images');
-          const videoUrl = (await getFileUrls(id, 'video'))[0];
+          const videoUrl = (await getFileUrls(id, 'video'))?.[0];
           return {
             ...report,
+            id,
             imageUrls,
             videoUrl
           };
@@ -97,20 +98,21 @@ const App = () => {
           }
         }}
       >
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout>
           <CustomHeader />
           {!pending ? (
             <Content
               style={{
                 margin: '24px 16px',
-                padding: 24
+                padding: 24,
+                minHeight: 'calc(100vh - 100px)'
               }}
             >
               <Row justify={'center'} gutter={[0, 10]}>
-                <Col span={21}>
+                <Col xs={23} sm={21}>
                   <Crumb />
                 </Col>
-                <Col span={21}>
+                <Col xs={23} sm={21}>
                   <Routes>
                     <Route path='/' element={<Home />} />
                     <Route index element={<Home />} />
@@ -124,25 +126,7 @@ const App = () => {
               </Row>
             </Content>
           ) : (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100wh',
-                height: 'calc(100vh - 100px)'
-              }}
-            >
-              <Row justify={'center'} gutter={[0, 20]}>
-                <Col span={6}>
-                  <Spin size='large' indicator={<LoadingOutlined />} />
-                </Col>
-                <Col span={24}>
-                  {' '}
-                  <span style={{ margin: '100px' }}>Loading...</span>
-                </Col>
-              </Row>
-            </div>
+            <Loading />
           )}
         </Layout>
       </ConfigProvider>
