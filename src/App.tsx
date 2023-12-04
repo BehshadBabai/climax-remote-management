@@ -24,7 +24,7 @@ import {
   getAllReports,
   getFileUrls
 } from './Utilities/Util';
-import { useAppDispatch } from './Redux/hooks';
+import { useAppDispatch, useAppSelector } from './Redux/hooks';
 import { changeReports } from './Redux/features/report/report-slice';
 import Loading from './Components/Loading';
 
@@ -32,29 +32,32 @@ const { Content } = Layout;
 
 const App = () => {
   const [pending, setPending] = React.useState(true);
+  const account = useAppSelector((state) => state.account);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         dispatch(changeLoggedIn(true));
-        dispatch(changeUserId(user.uid));
-        const docs = await fetchAllDocuments('users');
-        docs.forEach((doc) => {
-          const id = doc.id;
-          const data = doc.data();
-          const name = data.name as string;
-          const email = data.email as string;
-          const connectionId = data.connectionId as string;
-          const type = data.type as AccountType;
-          const view = data.view as ReportsViewType;
-          if (id === user.uid) {
-            dispatch(changeInfo({ name, email }));
-            dispatch(changeType(type));
-            dispatch(changeReportsViewType(view));
-            dispatch(changeConnectionId(connectionId));
-          }
-        });
+        if (!account.loggedIn) {
+          dispatch(changeUserId(user.uid));
+          const docs = await fetchAllDocuments('users');
+          docs.forEach((doc) => {
+            const id = doc.id;
+            const data = doc.data();
+            const name = data.name as string;
+            const email = data.email as string;
+            const connectionId = data.connectionId as string;
+            const type = data.type as AccountType;
+            const view = data.view as ReportsViewType;
+            if (id === user.uid) {
+              dispatch(changeInfo({ name, email }));
+              dispatch(changeType(type));
+              dispatch(changeReportsViewType(view));
+              dispatch(changeConnectionId(connectionId));
+            }
+          });
+        }
         setPending(false);
       } else {
         dispatch(changeLoggedIn(false));

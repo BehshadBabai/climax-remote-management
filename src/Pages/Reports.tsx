@@ -24,16 +24,8 @@ const Reports: React.FC = () => {
   const navigate = useNavigate();
   const [selectLoading, setSelectLoading] = React.useState(false);
   const [pageLoading, setPageLoading] = React.useState(true);
-  const initialReports = reports?.filter((report) => {
-    if (
-      report.creatorId === account.id ||
-      report.creatorId === account.connectionId
-    ) {
-      return true;
-    }
-    return false;
-  });
-  const [reportsToShow, setReportsToShow] = React.useState(initialReports);
+  const [reportsToShow, setReportsToShow] = React.useState([]);
+  const [initialReports, setInitialReports] = React.useState([]);
 
   React.useEffect(() => {
     if (!loggedIn) {
@@ -42,8 +34,31 @@ const Reports: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
-    setReportsToShow(initialReports);
     if (reports) {
+      if (initialReports.length === 0) {
+        setInitialReports(
+          reports.filter((report) => {
+            if (
+              report.creatorId === account.id ||
+              report.creatorId === account.connectionId
+            ) {
+              return true;
+            }
+            return false;
+          })
+        );
+      }
+      setReportsToShow(
+        reports.filter((report) => {
+          if (
+            report.creatorId === account.id ||
+            report.creatorId === account.connectionId
+          ) {
+            return true;
+          }
+          return false;
+        })
+      );
       setPageLoading(false);
     }
   }, [reports]);

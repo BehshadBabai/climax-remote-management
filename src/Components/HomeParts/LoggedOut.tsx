@@ -12,17 +12,26 @@ import {
 import { auth } from '../../Firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { AccountType } from '../../Redux/features/account/account-slice';
+import {
+  AccountType,
+  ReportsViewType,
+  changeConnectionId,
+  changeInfo,
+  changeReportsViewType,
+  changeType,
+  changeUserId
+} from '../../Redux/features/account/account-slice';
 import { firebaseErrorCodes } from '../../Utilities/Constants';
 import useScreenSize from '../../Hooks/useScreenSize';
 import { useAppDispatch } from '../../Redux/hooks';
+import { fetchAllDocuments } from '../../Utilities/Util';
 
 const LoggedOut: React.FC = () => {
   const [loginType, setLoginType] = React.useState<AccountType>(null);
   const [loginLoading, setLoginLoading] = React.useState(false);
   const screenSize = useScreenSize();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <Row style={{ width: '100%' }} justify={'center'} gutter={[0, 40]}>
@@ -127,7 +136,29 @@ const LoggedOut: React.FC = () => {
                       ? 'manager@gmail.com'
                       : 'supervisor@yahoo.com';
                   const password = '111111';
-                  await signInWithEmailAndPassword(auth, email, password);
+                  const res = await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                  );
+                  const user = res.user;
+                  dispatch(changeUserId(user.uid));
+                  const docs = await fetchAllDocuments('users');
+                  docs.forEach((doc) => {
+                    const id = doc.id;
+                    const data = doc.data();
+                    const name = data.name as string;
+                    const email = data.email as string;
+                    const connectionId = data.connectionId as string;
+                    const type = data.type as AccountType;
+                    const view = data.view as ReportsViewType;
+                    if (id === user.uid) {
+                      dispatch(changeInfo({ name, email }));
+                      dispatch(changeType(type));
+                      dispatch(changeReportsViewType(view));
+                      dispatch(changeConnectionId(connectionId));
+                    }
+                  });
                   message.success('Login Successful');
                   navigate('./reports');
                 } catch (error) {
