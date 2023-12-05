@@ -12,9 +12,17 @@ import {
 } from 'firebase/firestore';
 import { firestore } from '../Firebase/firebase';
 import { AccountState } from '../Redux/features/account/account-slice';
-import { getDownloadURL, getStorage, listAll, ref } from 'firebase/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  listAll,
+  ref,
+  uploadBytes
+} from 'firebase/storage';
 import dayjs from 'dayjs';
 import { days, monthsShort } from './Constants';
+import { Report } from '../Redux/features/report/report-slice';
 
 export const getCrumbItemsFromPath = (
   path: string,
@@ -196,4 +204,38 @@ export const getFullDate = (date: string) => {
   return `${days[dayjsDate.day()]}, ${
     monthsShort[dayjsDate.month()]
   } ${dayjsDate.date()}, ${dayjsDate.year()}`;
+};
+
+export const uploadFiles = async (
+  files: File[],
+  folder: string,
+  subFolder: string
+) => {
+  const storage = getStorage();
+  files.forEach(async (file, idx) => {
+    const storageRef = ref(
+      storage,
+      `${folder}/${subFolder}/${subFolder}(${idx})`
+    );
+    await uploadBytes(storageRef, file);
+  });
+};
+
+export const deleteFiles = async (report: Report) => {
+  const { id, imageUrls } = report;
+  const imagesCount = imageUrls.length;
+  const storage = getStorage();
+
+  const videoRef = ref(storage, `${id}/video/video(0)`);
+  await deleteObject(videoRef).catch((error) => {
+    console.log(error);
+  });
+
+  for (let i = 0; i < imagesCount; i++) {
+    const imgRef = ref(storage, `${id}/images/images(${i})`);
+
+    await deleteObject(imgRef).catch((error) => {
+      console.log(error);
+    });
+  }
 };

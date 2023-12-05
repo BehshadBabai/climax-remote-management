@@ -66,27 +66,6 @@ const App = () => {
     });
   }, []);
 
-  React.useEffect(() => {
-    async function effect() {
-      const dbReports = await getAllReports();
-      const fullReports = await Promise.all(
-        dbReports.map(async (report) => {
-          const id = report.id;
-          const imageUrls = await getFileUrls(id, 'images');
-          const videoUrl = (await getFileUrls(id, 'video'))?.[0];
-          return {
-            ...report,
-            id,
-            imageUrls,
-            videoUrl
-          };
-        })
-      );
-      dispatch(changeReports(fullReports));
-    }
-    effect();
-  }, []);
-
   return (
     <BrowserRouter>
       <ConfigProvider

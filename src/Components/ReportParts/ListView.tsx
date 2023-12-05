@@ -1,19 +1,9 @@
 import { FileTextOutlined } from '@ant-design/icons';
 import React from 'react';
-import {
-  Avatar,
-  List,
-  Image,
-  Typography,
-  Space,
-  Button,
-  Row,
-  Col,
-  Popconfirm
-} from 'antd';
+import { Avatar, List, Image, Typography, Space, Popconfirm } from 'antd';
 import { ViewProps } from '../../Utilities/types';
 import { colors } from '../../Utilities/Constants';
-import { deleteDocument, getFullDate } from '../../Utilities/Util';
+import { deleteDocument, deleteFiles, getFullDate } from '../../Utilities/Util';
 import useScreenSize from '../../Hooks/useScreenSize';
 import { changeReports } from '../../Redux/features/report/report-slice';
 import { useAppDispatch } from '../../Redux/hooks';
@@ -43,9 +33,11 @@ const ListView: React.FC<ViewProps> = ({ reports }) => {
               <Popconfirm
                 onConfirm={async () => {
                   await deleteDocument('reports', item.id);
+                  await deleteFiles(item);
                   dispatch(
                     changeReports(reports.filter((rep) => rep.id !== item.id))
                   );
+                  window.location.reload();
                 }}
                 title={'Delete Report'}
                 description='Are you sure you want to delete this report?'

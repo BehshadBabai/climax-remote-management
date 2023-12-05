@@ -11,21 +11,26 @@ import {
   TableOutlined,
   UnorderedListOutlined
 } from '@ant-design/icons';
-import { addOrEditDoc, reduxToDbAccount } from '../Utilities/Util';
+import {
+  addOrEditDoc,
+  getAllReports,
+  getFileUrls,
+  reduxToDbAccount
+} from '../Utilities/Util';
 import GridView from '../Components/ReportParts/GridView';
 import ListView from '../Components/ReportParts/ListView';
 import Loading from '../Components/Loading';
+import { changeReports } from '../Redux/features/report/report-slice';
 
 const Reports: React.FC = () => {
   const account = useAppSelector((state) => state.account);
-  const reports = useAppSelector((state) => state.report.reports);
   const dispatch = useAppDispatch();
   const { loggedIn, view } = account;
   const navigate = useNavigate();
   const [selectLoading, setSelectLoading] = React.useState(false);
   const [pageLoading, setPageLoading] = React.useState(true);
+  const [reports, setReports] = React.useState([]);
   const [reportsToShow, setReportsToShow] = React.useState([]);
-  const [initialReports, setInitialReports] = React.useState([]);
 
   React.useEffect(() => {
     if (!loggedIn) {
@@ -34,20 +39,30 @@ const Reports: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    async function effect() {
+      const dbReports = await getAllReports();
+      const fullReports = await Promise.all(
+        dbReports.map(async (report) => {
+          const id = report.id;
+          const imageUrls = await getFileUrls(id, 'images');
+          const videoUrl = (await getFileUrls(id, 'video'))?.[0];
+          return {
+            ...report,
+            id,
+            imageUrls,
+            videoUrl
+          };
+        })
+      );
+      dispatch(changeReports(fullReports));
+      setReports(fullReports);
+      setPageLoading(false);
+    }
+    effect();
+  }, []);
+
+  React.useEffect(() => {
     if (reports) {
-      if (initialReports.length === 0) {
-        setInitialReports(
-          reports.filter((report) => {
-            if (
-              report.creatorId === account.id ||
-              report.creatorId === account.connectionId
-            ) {
-              return true;
-            }
-            return false;
-          })
-        );
-      }
       setReportsToShow(
         reports.filter((report) => {
           if (
@@ -59,7 +74,6 @@ const Reports: React.FC = () => {
           return false;
         })
       );
-      setPageLoading(false);
     }
   }, [reports]);
 
@@ -82,7 +96,7 @@ const Reports: React.FC = () => {
                 );
                 setReportsToShow(newReportList);
               } else {
-                setReportsToShow(initialReports);
+                setReportsToShow(reportsToShow);
               }
             }}
           />

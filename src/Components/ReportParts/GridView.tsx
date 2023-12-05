@@ -13,7 +13,7 @@ import {
 import { FileTextOutlined } from '@ant-design/icons';
 import { colors } from '../../Utilities/Constants';
 import { useNavigate } from 'react-router-dom';
-import { deleteDocument, getFullDate } from '../../Utilities/Util';
+import { deleteDocument, deleteFiles, getFullDate } from '../../Utilities/Util';
 import { useAppDispatch } from '../../Redux/hooks';
 import { changeReports } from '../../Redux/features/report/report-slice';
 
@@ -80,6 +80,7 @@ const GridView: React.FC<ViewProps> = ({ reports }) => {
                   <Popconfirm
                     onConfirm={async () => {
                       await deleteDocument('reports', report.id);
+                      await deleteFiles(report);
                       dispatch(
                         changeReports(
                           reports.filter((rep) => rep.id !== report.id)
