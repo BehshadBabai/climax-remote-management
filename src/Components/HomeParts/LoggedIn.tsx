@@ -45,19 +45,12 @@ const LoggedIn: React.FC = () => {
             Reports
           </Button>,
           <Button
-            key='logout'
+            key='rfid'
             onClick={async () => {
-              try {
-                await signOut(auth).then(() => {
-                  message.success('Log Out Successful');
-                  dispatch(changeLoggedIn(false));
-                });
-              } catch (error) {
-                api.error('Log Out Failed');
-              }
+              navigate('/rfid');
             }}
           >
-            Logout
+            RFID Data
           </Button>
         ]}
       />

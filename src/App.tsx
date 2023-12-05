@@ -27,6 +27,7 @@ import {
 import { useAppDispatch, useAppSelector } from './Redux/hooks';
 import { changeReports } from './Redux/features/report/report-slice';
 import Loading from './Components/Loading';
+import RfidData from './Pages/RfidData';
 
 const { Content } = Layout;
 
@@ -99,6 +100,7 @@ const App = () => {
                     <Route path='/' element={<Home />} />
                     <Route index element={<Home />} />
                     <Route path='reports' element={<Reports />} />
+                    <Route path='rfid' element={<RfidData />} />
                     <Route path='reports/create' element={<CreateReport />} />
                     <Route path='reports/:id' element={<Report />} />
                     <Route path='404' element={<NoPage />} />

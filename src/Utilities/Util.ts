@@ -33,6 +33,8 @@ export const getCrumbItemsFromPath = (
   const init = [homeItem];
   if (path === '/') {
     return init;
+  } else if (path === '/rfid' || path === '/rfid/') {
+    return [...init, { title: 'RFID Data', href: '/rfid' }];
   } else if (path === '/reports' || path === '/reports/') {
     return [...init, { title: 'Reports', href: '/reports' }];
   } else if (path === '/reports/create' || path === '/reports/create/') {
