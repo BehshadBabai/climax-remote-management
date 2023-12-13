@@ -24,7 +24,6 @@ import {
 import { Report, changeReports } from '../Redux/features/report/report-slice';
 import useScreenSize from '../Hooks/useScreenSize';
 import { CalendarOutlined } from '@ant-design/icons';
-import Person from '../Components/ReportParts/Person';
 import TextArea from 'antd/es/input/TextArea';
 
 const Report: React.FC = () => {
@@ -164,57 +163,40 @@ const Report: React.FC = () => {
                 })}
               </Carousel>
             </Col>
-            <Col xs={24} lg={12}>
-              <Row justify={'space-between'} align={'middle'} gutter={[0, 20]}>
-                <Col>
-                  <Person
-                    src='/assets/worker.png'
-                    text='Supervisor Description: '
-                  />
-                </Col>
-                {type === 'supervisor' && (
-                  <Col>
-                    <Button type='primary' onClick={initiateChange}>
-                      {report.description ? 'Edit' : 'Write'}
-                    </Button>
-                  </Col>
-                )}
-              </Row>
-              <br />
-              <br />
+            <Col span={24}>
               <Row justify={'center'} style={{ width: '100%' }}>
-                <Col span={21}>
-                  <Typography.Paragraph style={{ fontSize: '1.08em' }}>
-                    {report.description}
+                <Col xs={24} md={20}>
+                  <Typography.Paragraph>
+                    <Typography.Title level={4}>Description: </Typography.Title>
+                    <pre style={{ padding: '20px' }}>{report.description}</pre>
+                    {type === 'supervisor' && (
+                      <Button type='primary' onClick={initiateChange}>
+                        {operationText} Description
+                      </Button>
+                    )}
                   </Typography.Paragraph>
                 </Col>
-              </Row>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Row justify={'space-between'} align={'middle'}>
-                <Col>
-                  <Person src='/assets/manager.png' text='Manager Reply: ' />
-                </Col>
-                {type === 'manager' && (
-                  <Col>
-                    <Button type='primary' onClick={initiateChange}>
-                      {report.reply ? 'Edit' : 'Write'}
-                    </Button>
-                  </Col>
-                )}
-              </Row>
-              <br />
-              <br />
-              <Row justify={'center'} style={{ width: '100%' }}>
-                <Col span={21}>
-                  <Typography.Paragraph style={{ fontSize: '1.08em' }}>
-                    {report.reply || (
+                <Col xs={24} md={20}>
+                  <Typography.Paragraph>
+                    <Typography.Title level={4}>
+                      Manager Reply:{' '}
+                    </Typography.Title>
+                    {report.reply ? (
+                      <blockquote style={{ padding: '20px' }}>
+                        {report.reply}
+                      </blockquote>
+                    ) : (
                       <Alert
                         message='No Replies Yet'
+                        description='There is no reply from your manager on this report yet.'
                         type='info'
                         showIcon
-                        closable={false}
                       />
+                    )}
+                    {type === 'manager' && (
+                      <Button type='primary' onClick={initiateChange}>
+                        {operationText} Reply
+                      </Button>
                     )}
                   </Typography.Paragraph>
                 </Col>
@@ -239,7 +221,7 @@ const Report: React.FC = () => {
             .then(() => {
               dispatch(
                 changeReports(
-                  reports.map((report) => {
+                  reports?.map((report) => {
                     if (report.id === report.id) {
                       return { ...report, ...data };
                     }

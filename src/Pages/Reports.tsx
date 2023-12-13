@@ -142,11 +142,7 @@ const Reports: React.FC = () => {
             Create New Report
           </Button>
         )}
-        {account.view === 'grid' ? (
-          <GridView reports={reportsToShow} />
-        ) : (
-          <ListView reports={reportsToShow} />
-        )}
+        {account.view === 'grid' ? <GridView /> : <ListView />}
       </Col>
     </Row>
   );

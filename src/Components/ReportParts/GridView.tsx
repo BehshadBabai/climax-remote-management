@@ -1,5 +1,4 @@
 import React from 'react';
-import { ViewProps } from '../../Utilities/types';
 import {
   Row,
   Col,
@@ -14,12 +13,13 @@ import { FileTextOutlined } from '@ant-design/icons';
 import { colors } from '../../Utilities/Constants';
 import { useNavigate } from 'react-router-dom';
 import { deleteDocument, deleteFiles, getFullDate } from '../../Utilities/Util';
-import { useAppDispatch } from '../../Redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 import { changeReports } from '../../Redux/features/report/report-slice';
 
-const GridView: React.FC<ViewProps> = ({ reports }) => {
+const GridView: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const reports = useAppSelector((state) => state.report.reports);
   return (
     <Row gutter={[16, 32]} style={{ marginTop: '20px' }}>
       {reports.length < 1 && (

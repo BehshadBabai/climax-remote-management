@@ -1,16 +1,16 @@
 import { FileTextOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Avatar, List, Image, Typography, Space, Popconfirm } from 'antd';
-import { ViewProps } from '../../Utilities/types';
 import { colors } from '../../Utilities/Constants';
 import { deleteDocument, deleteFiles, getFullDate } from '../../Utilities/Util';
 import useScreenSize from '../../Hooks/useScreenSize';
 import { changeReports } from '../../Redux/features/report/report-slice';
-import { useAppDispatch } from '../../Redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../Redux/hooks';
 
-const ListView: React.FC<ViewProps> = ({ reports }) => {
+const ListView: React.FC = () => {
   const screenSize = useScreenSize();
   const dispatch = useAppDispatch();
+  const reports = useAppSelector((state) => state.report.reports);
   return (
     <List
       style={{ marginTop: '20px' }}
@@ -37,7 +37,6 @@ const ListView: React.FC<ViewProps> = ({ reports }) => {
                   dispatch(
                     changeReports(reports.filter((rep) => rep.id !== item.id))
                   );
-                  window.location.reload();
                 }}
                 title={'Delete Report'}
                 description='Are you sure you want to delete this report?'
